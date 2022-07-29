@@ -19,6 +19,34 @@ export const useStoreUser = defineStore('user', ()=>{
         password: '',
         remember: false,
     })
+    const registerForm = reactive({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        remember: false,
+    })
+    const submitRegistration = async () => {
+        // console.log(loginForm);
+        if(isUserLoading.value) return;
+
+        isUserLoading.value = true
+        validUserErrors.value = {}
+
+        axios.post('/api/register', registerForm)
+        .then(res => {
+            loggedIn(res.data.data)
+            // console.log(res.data.data);
+        })
+        .catch(err => {
+            if(err.res?.data){
+                validUserErrors.value = err.res.data.errors
+                console.log(res.data.message);
+            }
+        })
+        .finally(() => isUserLoading.value = false)
+    }
+
 
     const submitLogin = async () => {
         // console.log(loginForm);
@@ -99,5 +127,5 @@ export const useStoreUser = defineStore('user', ()=>{
     // )
 
 
-    return {user, website, changeName, getUser, submitLogin, validUserErrors, isUserLoading, loginForm, logout }
+    return {user, website, changeName, getUser, submitLogin, validUserErrors, isUserLoading, loginForm, logout, registerForm, submitRegistration }
 })
